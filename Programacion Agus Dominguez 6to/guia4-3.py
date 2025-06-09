@@ -1,3 +1,4 @@
+# Ejercicio 3: Escribir una función que reciba un número del 1 al 10 y retorne la nota correspondiente según la siguiente tabla:
 def nota(num):
     if num==10:
         return "A"

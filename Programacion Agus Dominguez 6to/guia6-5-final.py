@@ -1,3 +1,5 @@
+# Dado una matriz de enteros, se pide calcular la suma de los elementos que están
+# adyacentes a un elemento dado por el usuario.
 matriz = [
     [3, 1, 8, 0, 0],
     [1, 4, 1, 0, 3],

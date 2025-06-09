@@ -1,3 +1,4 @@
+# Ejercicio 1: Escribir una función que reciba un número entero y retorne si es primo o no.
 def es_primo(num):
     if num==2 or num==3:
         return "es primo"

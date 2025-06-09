@@ -1,3 +1,5 @@
+# Ejercicio 1: Mejores ventas
+# Descripción: Este programa calcula el 10% de las mejores ventas de una lista de números aleatorios.
 import random
 def lista_random(n):
     return [random.randint(0, 100) for _ in range(n)]

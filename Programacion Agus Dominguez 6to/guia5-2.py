@@ -1,3 +1,4 @@
+# Ejercicio 2: Dada una palabra secreta, mostrar la pista con guiones bajos y las letras descubiertas.
 letra='a'
 palabra_secreta="ambulancia"
 pista=[]

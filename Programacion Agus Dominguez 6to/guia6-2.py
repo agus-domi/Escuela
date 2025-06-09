@@ -1,3 +1,5 @@
+# Ejercicio 2: Sumar dos matrices
+# Descripción: Este programa suma dos matrices de 2x3 y muestra el resultado.
 import random
 def matriz_random(n,m):
     return [[random.randint(0, 100) for _ in range(m)] for _ in range(n)]

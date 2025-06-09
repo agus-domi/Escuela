@@ -1,3 +1,5 @@
+# Ejercicio 4: Adivina el número
+# Descripción: Este programa permite al usuario adivinar un número secreto entre 1000 y 9000, con un número ilimitado de intentos.
 import random
 
 def acierto_o_no(n, secreto):

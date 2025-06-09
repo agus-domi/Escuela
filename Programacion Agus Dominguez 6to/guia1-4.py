@@ -1,3 +1,5 @@
+# Ejercicio 4
+# Escribir un programa que simule una carrera de 15 corredores, donde cada corredor tiene un tiempo de carrera.
 carreras = 0
 carreras12 = 0
 while (carreras<15 and carreras12<5):

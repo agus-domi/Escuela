@@ -1,3 +1,5 @@
+# Ejercicio 5: Fibonacci
+# Descripción: Este programa genera la secuencia de Fibonacci hasta el número ingresado por el usuario.
 num=int(input("Ingrese la cantidad de numeros que desea ver: "))
 numeros=[0,0]
 for i in range(0, num, 1):

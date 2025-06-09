@@ -1,3 +1,5 @@
+# Ejercicio 3: Manipulación de listas
+# Descripción: Este programa crea una lista de números aleatorios, muestra los primeros 5, el último elemento, intercambia el primero y el último, elimina el elemento del medio si la lista es impar, y muestra la lista sin el primer elemento.
 import random
 def lista_random(n):
     return [random.randint(0, 100) for _ in range(n)]
