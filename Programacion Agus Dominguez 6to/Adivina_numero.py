@@ -1,4 +1,4 @@
-# Ejercicio 3: Adivina el número
+#Adivina el número
 # Descripción: Este programa permite al usuario adivinar un número secreto entre 1 y 9, con un máximo de 3 intentos.
 import random
 intentos = 0
