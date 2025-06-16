@@ -1,8 +1,7 @@
 #Este programa calcula la compatibilidad entre dos personas basándose en sus nombres.
-#Entrada de Datos
+#Entrada de Datos y preparación de Letras
 nombre1 = input("Ingrese el nombre de la primera persona: ")
 nombre2 = input("Ingrese el nombre de la segunda persona: ")
-#Preparación de Letras
 letras = []
 if len(nombre1) > len(nombre2):
     letras = list(nombre1.lower()) + list(nombre2.lower())
@@ -38,4 +37,5 @@ def compatibilidad(numeros):
 while len(cant_letras) > 2:
     cant_letras = compatibilidad(cant_letras)
 #Resultado Final
-print(f"La compatibilidad entre {nombre1} y {nombre2} es de {cant_letras[0]*10+cant_letras[1]}%")
+compatibilidad_final = cant_letras[0] * 10 + cant_letras[1]
+print(f"La compatibilidad entre {nombre1} y {nombre2} es de {compatibilidad_final}%")
