@@ -9,11 +9,11 @@ if len(nombre1) > len(nombre2):
 else:
     letras = list(nombre2.lower()) + list(nombre1.lower())
 #Conteo de Letras Unicas
-n = []
+cant_letras = []
 usadas = []
 for letra in letras:
     if letra not in usadas:
-        n.append(letras.count(letra))
+        cant_letras.append(letras.count(letra))
         usadas.append(letra)
 #Función de Compatibilidad(Reducir la lista de números)
 def compatibilidad(numeros):
@@ -35,7 +35,7 @@ def compatibilidad(numeros):
 # 5, 4
 #Proceso Principal
 # Mientras la lista de números tenga más de 2 elementos, se aplica la función de compatibilidad.
-while len(n) > 2:
-    n = compatibilidad(n)
+while len(cant_letras) > 2:
+    cant_letras = compatibilidad(cant_letras)
 #Resultado Final
-print(f"La compatibilidad entre {nombre1} y {nombre2} es de {n[0]*10+n[1]}%")
+print(f"La compatibilidad entre {nombre1} y {nombre2} es de {cant_letras[0]*10+cant_letras[1]}%")
