@@ -36,6 +36,13 @@ def compatibilidad(numeros):
 # Mientras la lista de números tenga más de 2 elementos, se aplica la función de compatibilidad.
 while len(cant_letras) > 2:
     cant_letras = compatibilidad(cant_letras)
+    if len(cant_letras) == 2 and cant_letras[0] >= 10:
+        cant_letras.append(cant_letras[1])
+        cant_letras[1] = cant_letras[0] % 10
+        cant_letras[0] = cant_letras[0] // 10
+    elif len(cant_letras) == 2 and cant_letras[1] >= 10:
+        cant_letras.append(cant_letras[1] % 10)
+        cant_letras[1] = cant_letras[1] // 10
 #Resultado Final
 compatibilidad_final = cant_letras[0] * 10 + cant_letras[1]
 print(f"La compatibilidad entre {nombre1} y {nombre2} es de {compatibilidad_final}%")
