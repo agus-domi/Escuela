@@ -1,0 +1,118 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #F8F9FA;
+}
+.productos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  text-align: center;
+}
+
+figure {
+  width: 300px;
+  background-color:#007BFF;
+  border-radius: 1em;
+  padding: 2em;
+}
+
+.contiene-imagen {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+figcaption {
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #000000;
+}
+
+nav {
+  background-color: #007BFF;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+.menu-icon {
+  font-size: 24px;
+  cursor: pointer;
+  display: none;
+  /* Ocultar el botón del menú por defecto */
+}
+
+.menu {
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+
+}
+
+.menu li {
+  margin-right: 20px;
+}
+
+.menu li a {
+  text-decoration: none;
+  color: #000000;
+}
+
+.content {
+  padding: 20px;
+}
+footer{
+  background-color: #007BFF;
+  margin-top: 1.5em;
+  padding: 1em;
+}
+
+#menu-toggle {
+  display: none;
+  /* Mostrar menú cuando la casilla de verificación está marcada */
+}
+
+
+
+/* Estilos para pantallas pequeñas (menos de 600px de ancho) */
+@media screen and (max-width: 600px) {
+  nav {
+    flex-direction: column;
+    /* Cambiar la dirección del flexbox */
+    align-items: flex-start;
+    /* Alinear los elementos al principio */
+  }
+
+  .menu {
+    display: none;
+    /* Ocultar menú en pantallas pequeñas */
+    flex-direction: column;
+    /* Apilar elementos del menú verticalmente */
+
+  }
+
+  #menu-toggle:checked~.menu {
+    display: flex;
+    /* Mostrar menú cuando la casilla de verificación está marcada */
+  }
+
+  .menu-icon {
+    display: block;
+    /* Mostrar el botón del menú en pantallas pequeñas */
+  }
+
+  .contiene-imagen {
+    width: 60%;
+  }
+
+  .logo {
+    width: 20%;
+    height: 20%;
+  }
+
+}
