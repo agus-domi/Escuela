@@ -5,7 +5,7 @@ class Carrito:
         self.total = 0.0
 
     def agregarProducto(self, producto, cantidad):
-        if not producto.reducirStock(cantidad):
+        if not producto.reducirStock(cantidad) or cantidad <= 0:
             return producto.stock  # Retorna el stock disponible si no se puede agregar
         for fila in self.productos:
             if fila[0].nombre == producto.nombre:
