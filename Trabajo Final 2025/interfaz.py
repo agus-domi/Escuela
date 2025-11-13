@@ -1,179 +1,198 @@
 import tkinter as tk
 from tkinter import messagebox
+from PIL import Image, ImageTk
 from carrito import Carrito
 from producto import Producto
 
 # ------------------- FUNCIONES AUXILIARES -----------------------
 
-def buscar(nombre):
-    for p in deposito:
-        if p.nombre.lower() == nombre.lower():
-            return p
-    return False
+def actualizar_tienda():
+    for widget in frame_productos.winfo_children():
+        widget.destroy()
 
-def actualizar_lista_productos():
-    lista_productos.delete(0, tk.END)
-    for p in deposito:
-        lista_productos.insert(
-            tk.END, f"{p.nombre} - ${p.precio:.2f} | Stock: {p.stock}"
-        )
+    filas = 1
+    columnas = 3
 
-def actualizar_lista_carrito():
+    for i, producto in enumerate(deposito):
+        fila = i // columnas
+        columna = i % columnas
+        crear_card_producto(frame_productos, producto, fila, columna)
+
+    frame_productos.update_idletasks()
+    frame_productos.place(relx=0.5, rely=0.5, anchor="center")
+
+def crear_card_producto(parent, producto, fila, columna):
+    card = tk.Frame(parent, bg="white", bd=1, relief="solid")
+    card.grid(row=fila, column=columna, padx=15, pady=15)
+
+    try:
+        imagen = Image.open(f"images/{producto.nombre.lower().replace(' ', '_')}.png")
+        imagen = imagen.resize((130, 130))
+        foto = ImageTk.PhotoImage(imagen)
+    except:
+        foto = None
+
+    if foto:
+        lbl_img = tk.Label(card, image=foto, bg="white")
+        lbl_img.image = foto
+        lbl_img.pack(pady=5)
+
+    tk.Label(card, text=producto.nombre, bg="white", fg="#333333",
+             font=("Segoe UI", 11, "bold")).pack()
+    tk.Label(card, text=f"${producto.precio:.2f}", bg="white",
+             fg="#00bcd4", font=("Segoe UI", 10, "bold")).pack(pady=3)
+
+    cantidad_frame = tk.Frame(card, bg="white")
+    cantidad_frame.pack(pady=3)
+
+    cantidad = tk.IntVar(value=1)
+
+    tk.Button(cantidad_frame, text="–", command=lambda: cantidad.set(max(1, cantidad.get() - 1)),
+              bg="#ffb74d", fg="white", font=("Segoe UI", 9, "bold"),
+              relief="flat", width=2).pack(side="left")
+
+    tk.Label(cantidad_frame, textvariable=cantidad, bg="white",
+             font=("Segoe UI", 10, "bold")).pack(side="left", padx=5)
+
+    tk.Button(cantidad_frame, text="+", command=lambda: cantidad.set(cantidad.get() + 1),
+              bg="#00bcd4", fg="white", font=("Segoe UI", 9, "bold"),
+              relief="flat", width=2).pack(side="left")
+
+    def agregar():
+        cant = cantidad.get()
+        resultado = carrito.agregarProducto(producto, cant)
+        if resultado is True:
+            messagebox.showinfo("Agregado", f"Se agregó {cant} {producto.nombre} al carrito.")
+        else:
+            if resultado <= 0:
+                messagebox.showwarning("Sin stock", f"No hay stock disponible.")
+            else:
+                messagebox.showwarning("Stock limitado", f"Solo quedan {resultado} disponibles.")
+        actualizar_tienda()
+
+    tk.Button(card, text="🛒 Agregar al carrito", command=agregar,
+              bg="#00bcd4", fg="white", relief="flat", cursor="hand2",
+              font=("Segoe UI", 9, "bold"), width=20).pack(pady=5)
+
+# ------------------- CARRITO -----------------------
+
+def actualizar_carrito():
     for widget in carrito_items_frame.winfo_children():
         widget.destroy()
 
     if not carrito.productos:
-        tk.Label(
-            carrito_items_frame,
-            text="El carrito está vacío 🛒",
-            font=("Segoe UI", 12, "italic"),
-            fg="#999"
-        ).pack(pady=30)
-        lbl_total.config(text="Total: $0.00")
-        return
-
-    for i in range(len(carrito.productos)):
-        nombre, precio, cantidad, subtotal = carrito.mostrarProducto(i)
-
-        fila = tk.Frame(
-            carrito_items_frame,
-            bg="white",
-            relief="groove",
-            bd=1
-        )
-        fila.pack(pady=6, ipadx=10, ipady=6, anchor="center")
-
-        tk.Label(
-            fila,
-            text=f"{nombre} ×{cantidad}  -  ${subtotal:.2f}",
-            bg="white",
-            font=("Segoe UI", 11)
-        ).pack(side="left", padx=10)
-
-        tk.Button(
-            fila,
-            text="✖",
-            command=lambda idx=i: eliminar_item_index(idx),
-            bg="#ff6b6b",
-            fg="white",
-            font=("Segoe UI", 10, "bold"),
-            activebackground="#ff8787",
-            cursor="hand2",
-            width=3,
-            relief="flat"
-        ).pack(side="right", padx=5)
+        tk.Label(carrito_items_frame, text="🛍️ El carrito está vacío",
+                 bg="#f4f6f8", fg="#888", font=("Segoe UI", 12, "italic")).pack(pady=30)
+    else:
+        for i, (producto, cantidad) in enumerate(carrito.productos):
+            crear_card_carrito(carrito_items_frame, producto, cantidad)
 
     lbl_total.config(text=f"Total: ${carrito.total:.2f}")
 
-def agregar_al_carrito():
-    seleccion = lista_productos.curselection()
-    if not seleccion:
-        messagebox.showwarning("Atención", "Seleccione un producto de la lista.")
-        return
+def crear_card_carrito(parent, producto, cantidad):
+    card = tk.Frame(parent, bg="white", relief="groove", bd=1)
+    card.pack(pady=6, padx=15, fill="x")
 
-    indice = seleccion[0]
-    producto = deposito[indice]
+    tk.Label(card, text=producto.nombre, bg="white", fg="#333",
+             font=("Segoe UI", 11, "bold")).pack(side="left", padx=10)
 
-    try:
-        cantidad = int(spin_cantidad.get())
-    except ValueError:
-        cantidad = 1
+    cantidad_var = tk.IntVar(value=cantidad)
 
-    resultado = carrito.agregarProducto(producto, cantidad)
-    if resultado is True:
-        messagebox.showinfo("Agregado", f"Se agregó {cantidad} {producto.nombre} al carrito.")
-    else:
-        if resultado <= 0:
-            messagebox.showwarning("Stock insuficiente", f"No hay stock de este producto.")
+    def sumar():
+        if producto.stock > 0:
+            carrito.agregarProducto(producto, 1)
+            cantidad_var.set(cantidad_var.get() + 1)
+            actualizar_carrito()
+
+    def restar():
+        if cantidad_var.get() > 1:
+            carrito.eliminarProducto(producto)
+            carrito.agregarProducto(producto, cantidad_var.get() - 1)
         else:
-            messagebox.showwarning("Stock insuficiente", f"Solo hay {resultado} en stock.")
+            carrito.eliminarProducto(producto)
+        actualizar_carrito()
 
-    actualizar_lista_productos()
-    actualizar_lista_carrito()
+    control_frame = tk.Frame(card, bg="white")
+    control_frame.pack(side="right", padx=10)
 
-def eliminar_item_index(indice):
-    if indice < 0 or indice >= len(carrito.productos):
-        messagebox.showwarning("Atención", "Producto no válido.")
-        return
-    producto, _ = carrito.productos[indice]
+    tk.Button(control_frame, text="–", command=restar, bg="#ffb74d",
+              fg="white", relief="flat", width=2).pack(side="left")
+    tk.Label(control_frame, textvariable=cantidad_var, bg="white",
+             font=("Segoe UI", 10, "bold"), width=3).pack(side="left")
+    tk.Button(control_frame, text="+", command=sumar, bg="#00bcd4",
+              fg="white", relief="flat", width=2).pack(side="left")
+
+    tk.Button(control_frame, text="✖", command=lambda: eliminar_producto(producto),
+              bg="#e53935", fg="white", relief="flat", width=2).pack(side="left", padx=5)
+
+def eliminar_producto(producto):
     carrito.eliminarProducto(producto)
-    actualizar_lista_carrito()
-    actualizar_lista_productos()
+    actualizar_carrito()
 
 def vaciar_carrito():
     carrito.vaciarCarrito()
-    actualizar_lista_carrito()
-    actualizar_lista_productos()
+    actualizar_carrito()
+    actualizar_tienda()
 
 def mostrar_carrito():
     frame_tienda.pack_forget()
     frame_carrito.pack(fill="both", expand=True)
-    actualizar_lista_carrito()
+    actualizar_carrito()
 
 def mostrar_tienda():
     frame_carrito.pack_forget()
     frame_tienda.pack(fill="both", expand=True)
-    actualizar_lista_productos()
+    actualizar_tienda()
 
-# -------------------------------------------------------------------------------------------------------
-# CARGA DE PRODUCTOS
+# ------------------- INICIALIZACIÓN -----------------------
 carrito = Carrito()
 deposito = []
 with open("productos.txt", "r", encoding="utf-8") as archivo:
     for linea in archivo:
-        linea = linea.strip()
-        if linea:
-            nombre, precio, cantidad = linea.split(";")
-            deposito.append(Producto(nombre, float(precio), int(cantidad)))
+        nombre, precio, stock = linea.strip().split(";")
+        deposito.append(Producto(nombre, float(precio), int(stock)))
 
-# -------------------------------------------------------------------------------------------------------
-# VENTANA PRINCIPAL
 root = tk.Tk()
-root.title("🛍️ Tienda Virtual")
-root.geometry("640x450")
+root.title("Tienda")
+root.geometry("800x600")
 root.configure(bg="#f4f6f8")
 
-# -------------------- FRAME TIENDA -------------------------------
+# ------------------- FRAME TIENDA -----------------------
 frame_tienda = tk.Frame(root, bg="#f4f6f8")
 frame_tienda.pack(fill="both", expand=True)
 
-tk.Label(frame_tienda, text="🛒 Tienda", font=("Segoe UI", 20, "bold"), bg="#f4f6f8", fg="#333").pack(pady=10)
+titulo = tk.Label(frame_tienda, text="Nuestros Productos",
+                  bg="#f4f6f8", fg="#333333", font=("Segoe UI", 18, "bold"))
+titulo.pack(pady=15)
 
-lista_productos = tk.Listbox(frame_tienda, width=55, height=10, font=("Segoe UI", 10))
-lista_productos.pack(pady=5)
+frame_productos = tk.Frame(frame_tienda, bg="#f4f6f8")
+frame_productos.pack(expand=True)
 
-cantidad_frame = tk.Frame(frame_tienda, bg="#f4f6f8")
-cantidad_frame.pack(pady=5)
-tk.Label(cantidad_frame, text="Cantidad:", bg="#f4f6f8", font=("Segoe UI", 10)).pack(side="left")
-spin_cantidad = tk.Spinbox(cantidad_frame, from_=1, to=100, width=5, font=("Segoe UI", 10))
-spin_cantidad.pack(side="left", padx=5)
+btn_carrito = tk.Button(frame_tienda, text="🧺 Ver carrito", command=mostrar_carrito,
+                        bg="#00bcd4", fg="white", font=("Segoe UI", 11, "bold"),
+                        relief="flat", cursor="hand2", width=15)
+btn_carrito.pack(pady=20)
 
-boton_frame = tk.Frame(frame_tienda, bg="#f4f6f8")
-boton_frame.pack(pady=10)
-tk.Button(boton_frame, text="🛒 Agregar al carrito", command=agregar_al_carrito, bg="#4CAF50", fg="white",
-          font=("Segoe UI", 10, "bold"), relief="flat", cursor="hand2", width=20).pack(pady=5)
-tk.Button(boton_frame, text="🧺 Ver carrito", command=mostrar_carrito, bg="#2196F3", fg="white",
-          font=("Segoe UI", 10, "bold"), relief="flat", cursor="hand2", width=20).pack(pady=5)
-
-# -------------------- FRAME CARRITO -------------------------------
+# ------------------- FRAME CARRITO -----------------------
 frame_carrito = tk.Frame(root, bg="#f4f6f8")
 
-tk.Label(frame_carrito, text="🧺 Tu Carrito", font=("Segoe UI", 20, "bold"), bg="#f4f6f8", fg="#333").pack(pady=10)
+tk.Label(frame_carrito, text="Tu Carrito",
+         bg="#f4f6f8", fg="#333333", font=("Segoe UI", 18, "bold")).pack(pady=15)
 
 carrito_items_frame = tk.Frame(frame_carrito, bg="#f4f6f8")
-carrito_items_frame.pack(pady=10)
+carrito_items_frame.pack(pady=10, fill="both", expand=True)
 
-lbl_total = tk.Label(frame_carrito, text="Total: $0.00", font=("Segoe UI", 14, "bold"), bg="#f4f6f8", fg="#444")
+lbl_total = tk.Label(frame_carrito, text="Total: $0.00",
+                     bg="#f4f6f8", fg="#333333", font=("Segoe UI", 14, "bold"))
 lbl_total.pack(pady=10)
 
-btns_frame = tk.Frame(frame_carrito, bg="#f4f6f8")
-btns_frame.pack(pady=10)
+frame_botones = tk.Frame(frame_carrito, bg="#f4f6f8")
+frame_botones.pack(pady=15)
 
-tk.Button(btns_frame, text="🗑 Vaciar carrito", command=vaciar_carrito, bg="#E53935", fg="white",
-          font=("Segoe UI", 10, "bold"), relief="flat", cursor="hand2", width=16).grid(row=0, column=0, padx=5)
-tk.Button(btns_frame, text="⬅ Volver a tienda", command=mostrar_tienda, bg="#9E9E9E", fg="white",
-          font=("Segoe UI", 10, "bold"), relief="flat", cursor="hand2", width=16).grid(row=0, column=1, padx=5)
+tk.Button(frame_botones, text="⬅ Volver a tienda", command=mostrar_tienda,
+          bg="#9e9e9e", fg="white", relief="flat", width=18, font=("Segoe UI", 10, "bold")).grid(row=0, column=0, padx=5)
+tk.Button(frame_botones, text="🗑 Vaciar carrito", command=vaciar_carrito,
+          bg="#e53935", fg="white", relief="flat", width=18, font=("Segoe UI", 10, "bold")).grid(row=0, column=1, padx=5)
 
-# Inicializa la vista
-actualizar_lista_productos()
+actualizar_tienda()
 root.mainloop()

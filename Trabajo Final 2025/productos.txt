@@ -1,4 +1,6 @@
 Coca Cola;1200;10
 Pepsi;1100;8
 Agua;800;15
-Galletitas;600;20
+Oreo;600;20
+Pepitos;550;15
+Guaymallen;200;24
