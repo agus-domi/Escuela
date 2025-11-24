@@ -174,11 +174,17 @@ titulo.pack(pady=15)
 
 # -----------------------------------------------------------
 
+btn_carrito = ttk.Button(
+    frame_tienda,
+    text="🧺 Ver carrito",
+    command=mostrar_carrito,
+    width=20
+)
+btn_carrito.pack(pady=15)
+
 frame_productos = ttk.Frame(frame_tienda)
 frame_productos.pack(expand=True)
 
-ttk.Button(frame_tienda, text="🧺 Ver carrito",
-           command=mostrar_carrito, width=20).pack(pady=20)
 
 # ------------------- FRAME CARRITO -----------------------
 frame_carrito = ttk.Frame(root)
